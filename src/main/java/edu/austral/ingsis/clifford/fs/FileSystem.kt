@@ -18,4 +18,8 @@ object FileSystem : IFileSystem {
     override fun removeNode(name: String) {
         nodes.removeIf { it.name == name }
     }
+
+    override fun removeNodes() {
+        nodes.clear()
+    }
 }

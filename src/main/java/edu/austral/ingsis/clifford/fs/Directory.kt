@@ -1,6 +1,6 @@
 package edu.austral.ingsis.clifford.fs
 
-class Directory(override val name: String) : INode {
+open class Directory(override val name: String) : INode {
     private val nodes: MutableList<INode> = mutableListOf()
 
     fun addNode(node: INode) {
@@ -11,7 +11,15 @@ class Directory(override val name: String) : INode {
         return nodes.find { it.name == name }
     }
 
+    fun getNodes(): List<INode> {
+        return nodes
+    }
+
     fun removeNode(name: String): Boolean {
         return nodes.removeIf { it.name == name }
+    }
+
+    fun removeNodes() {
+        nodes.clear()
     }
 }

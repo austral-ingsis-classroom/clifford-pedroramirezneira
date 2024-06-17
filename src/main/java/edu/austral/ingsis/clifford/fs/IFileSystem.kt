@@ -5,4 +5,5 @@ interface IFileSystem {
     fun getNode(name: String): INode?
     fun getNodes(): List<INode>
     fun removeNode(name: String)
+    fun removeNodes()
 }

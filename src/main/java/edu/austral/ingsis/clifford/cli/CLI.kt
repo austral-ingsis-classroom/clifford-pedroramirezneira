@@ -1,9 +1,14 @@
 package edu.austral.ingsis.clifford.cli
 
 import edu.austral.ingsis.clifford.commands.defaultCommands
+import edu.austral.ingsis.clifford.fs.Directory
 
-class CLI : ICLI {
+object CLI : ICLI {
     private val commands = defaultCommands
+
+    var directory: Directory? = null
+
+    var name: String? = null
 
     override fun execute(input: String): String {
         val args = input.split(" ")
