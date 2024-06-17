@@ -5,6 +5,7 @@ import edu.austral.ingsis.clifford.commands.builders.ICommandBuilder
 import edu.austral.ingsis.clifford.commands.builders.LsBuilder
 import edu.austral.ingsis.clifford.commands.builders.MkdirBuilder
 import edu.austral.ingsis.clifford.commands.builders.PwdBuilder
+import edu.austral.ingsis.clifford.commands.builders.RmBuilder
 import edu.austral.ingsis.clifford.commands.builders.TouchBuilder
 
 val defaultCommands: Map<String, ICommandBuilder> = mapOf(
@@ -12,5 +13,6 @@ val defaultCommands: Map<String, ICommandBuilder> = mapOf(
     "mkdir" to MkdirBuilder(),
     "touch" to TouchBuilder(),
     "cd" to CdBuilder(),
-    "pwd" to PwdBuilder()
+    "pwd" to PwdBuilder(),
+    "rm" to RmBuilder()
 )

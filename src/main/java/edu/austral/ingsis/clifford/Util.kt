@@ -28,4 +28,37 @@ object Util {
         }
         return null
     }
+
+    fun findNode(path: List<String>, startFromRoot: Boolean = false): Pair<Directory, String>? {
+        val children = when {
+            startFromRoot -> FileSystem.getNodes()
+            else -> CLI.directory?.getNodes() ?: FileSystem.getNodes()
+        }
+        for (child in children) {
+            if (child is Directory && child.name == path[0]) {
+                if (path.size == 1) return child to child.name
+                return findNode(path.subList(1, path.size), child, child.name)
+            }
+        }
+        return null
+    }
+
+    private fun findNode(
+        path: List<String>,
+        currentDirectory: Directory,
+        fullPath: String
+    ): Pair<Directory, String>? {
+        if (path.isEmpty()) return currentDirectory to fullPath
+        for (child in currentDirectory.getNodes()) {
+            if (child is Directory && child.name == path[0]) {
+                if (path.size == 1) return child to "$fullPath/${child.name}"
+                return findNode(
+                    path.subList(1, path.size),
+                    child,
+                    "$fullPath/${child.name}"
+                )
+            }
+        }
+        return null
+    }
 }

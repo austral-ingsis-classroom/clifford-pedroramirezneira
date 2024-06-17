@@ -4,29 +4,31 @@ import edu.austral.ingsis.clifford.Util
 import edu.austral.ingsis.clifford.cli.CLI
 import edu.austral.ingsis.clifford.fs.Directory
 import edu.austral.ingsis.clifford.fs.FileSystem
+import edu.austral.ingsis.clifford.fs.INode
 import edu.austral.ingsis.clifford.fs.Root
 
-private const val NOT_FOUND = "Not found"
 
 class Cd(private val path: String) : ICommand {
+    private val notFound = "'$path' directory does not exist"
+
     override fun execute(): String {
         return when {
             path == ".." -> {
                 when (CLI.directory) {
-                    null -> return "Moved to directory '/'"
+                    null -> return "moved to directory '/'"
                     else -> {
                         val parent = Util.findParent(CLI.directory!!)
                         return when {
                             parent is Root -> {
                                 CLI.directory = null
                                 CLI.name = null
-                                "Moved to directory '/'"
+                                "moved to directory '/'"
                             }
 
                             else -> {
                                 CLI.directory = parent
                                 CLI.name = parent!!.name
-                                "Moved to directory '${parent.name}'"
+                                "moved to directory '${parent.name}'"
                             }
 
                         }
@@ -35,47 +37,39 @@ class Cd(private val path: String) : ICommand {
                 }
             }
 
-            path == "." -> "Moved to directory '${CLI.name}'"
+            path == "." -> "moved to directory '${CLI.name}'"
 
             path.startsWith("/") -> {
-                val subPaths = path.split("/")
-                for (subPath in subPaths) {
-                    return when (val subDirectory = FileSystem.getNode(subPath)) {
-                        null -> NOT_FOUND
-                        !is Directory -> NOT_FOUND
-                        else -> {
-                            CLI.directory = subDirectory
-                            CLI.name = subDirectory.name
-                            "Moved to directory '${subDirectory.name}'"
+                return when {
+                    path == "/" -> {
+                        CLI.directory = null
+                        CLI.name = null
+                        "moved to directory '/'"
+                    }
+
+                    else -> {
+                        val subPaths = path.split("/")
+                        val directory = Util.findNode(subPaths, startFromRoot = true)
+                        return when (directory) {
+                            null -> notFound
+                            else -> {
+                                CLI.directory = directory.first
+                                CLI.name = "/${directory.second}"
+                                "moved to directory '${directory.second.split("/").last()}'"
+                            }
                         }
                     }
                 }
-                NOT_FOUND
             }
 
-            else -> when (CLI.directory) {
-                null -> {
-                    return when (val child = FileSystem.getNode(path)) {
-                        null -> NOT_FOUND
-                        !is Directory -> NOT_FOUND
-                        else -> {
-                            println(child.name)
-                            CLI.directory = child
-                            CLI.name = "/${child.name}"
-                            "Moved to directory '${child.name}'"
-                        }
-                    }
-                }
-
-                else -> {
-                    return when (val child = CLI.directory!!.getNode(path)) {
-                        null -> NOT_FOUND
-                        !is Directory -> NOT_FOUND
-                        else -> {
-                            CLI.directory = child
-                            CLI.name = child.name
-                            "Moved to directory '${child.name}'"
-                        }
+            else -> {
+                val subPaths = path.split("/")
+                return when (val directory = Util.findNode(subPaths)) {
+                    null -> notFound
+                    else -> {
+                        CLI.directory = directory.first
+                        CLI.name = "/${directory.second}"
+                        "moved to directory '${directory.second.split("/").last()}'"
                     }
                 }
             }
